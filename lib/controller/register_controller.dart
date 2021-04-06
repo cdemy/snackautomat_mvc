@@ -1,6 +1,5 @@
 import 'package:snackautomat/controller/_register_controller.dart';
 import 'package:snackautomat/models/_register.dart';
-import 'package:snackautomat/models/register.dart';
 
 class RegisterController implements IRegisterController {
   static const stdMessage = 'Hallo Welt';
