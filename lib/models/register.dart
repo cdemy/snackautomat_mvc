@@ -12,6 +12,6 @@ class Register implements IRegister {
 
   Register copyWith({int? debit, List<int>? coins, List<int>? payout}) => Register(
         coins: coins ?? _coins,
-        payout: payout ?? _payout,
+        payout: payout ?? [],
       );
 }

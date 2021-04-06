@@ -10,5 +10,7 @@ abstract class IRegisterController {
   bool get isAdminMode;
   int? get displayPrice;
   int? get displayDebit;
-  int? get isPrinting;
+  int? get producedSlot;
+  List<int> get coins;
+  List<int> get payout;
 }
