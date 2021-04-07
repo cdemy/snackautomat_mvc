@@ -24,7 +24,7 @@ class RegisterController implements IRegisterController {
   void adminMode([bool? isAdminMode]) {
     _message = stdMessage;
     if (_displayDebit > 0) {
-      throw CantTakeCoinsWithDebitActive();
+      throw CantSwitchToAdminModeWithDebit();
     }
     _adminMode = isAdminMode ?? !_adminMode;
   }
@@ -136,4 +136,4 @@ class DebitLeftButNoCoinsLeft implements Exception {}
 
 class AdminTookCoinThatWasntThere implements Exception {}
 
-class CantTakeCoinsWithDebitActive implements Exception {}
+class CantSwitchToAdminModeWithDebit implements Exception {}
