@@ -1,14 +1,18 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:snackautomat/controller/_register_controller.dart';
 
 // ignore_for_file: prefer_expression_function_bodies
-
+/// Main screen of the app
 class AutomatScreen extends StatelessWidget {
+  final IRegisterController _con = IRegisterController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Automat'),
+        title: const Text('Automat'),
       ),
       body: SafeArea(
         child: Flex(
@@ -30,16 +34,16 @@ class AutomatScreen extends StatelessWidget {
                 direction: Axis.vertical,
                 children: [
                   _buildAdminButton(context),
-                  _buildLED(context),
-                  _buildLed(context),
+                  _buildLED(context, 'Preis', _con.displayPrice ?? 0),
+                  _buildLED(context, 'Einwurf', _con.displayDebit ?? 0),
                   _buildCoin(context, Colors.grey[200], 200, '2'),
                   _buildCoin(context, Colors.grey[200], 100, '1'),
                   _buildCoin(context, Colors.orange[200], 50, '50'),
                   _buildCoin(context, Colors.orange[200], 20, '20'),
                   _buildCoin(context, Colors.orange[200], 10, '10'),
-                  _buildCoin(context, Colors.deepOrangeAccent[300], 5, '5'),
-                  _buildCoin(context, Colors.deepOrangeAccent[300], 2, '2'),
-                  _buildCoin(context, Colors.deepOrangeAccent[300], 1, '1'),
+                  _buildCoin(context, Colors.deepOrange[300]!, 5, '5'),
+                  _buildCoin(context, Colors.deepOrange[300]!, 2, '2'),
+                  _buildCoin(context, Colors.deepOrange[300]!, 1, '1'),
                 ],
               ),
             ),
@@ -49,15 +53,159 @@ class AutomatScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildAdminButton(BuildContext context) {
+    return Flexible(
+      child: Container(
+          child: Center(
+        child: Switch(
+          value: _con.isAdminMode,
+          onChanged: (value) {
+            log('AdminMode wurde gestellt auf: $value');
+            _con.adminMode(value);
+          },
+        ),
+      )),
+    );
+  }
+
   Widget _buildAusgabe(BuildContext context) {
-    return Container(
-      color: Colors.red,
+    return Expanded(
+      child: Container(
+        color: Colors.red,
+        child: FittedBox(
+          child: Text(
+            _con.selectedSlot.toString(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCoin(BuildContext context, Color? color, int value, String denom) {
+    return Flexible(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          var max = constraints.maxHeight;
+          if (constraints.maxWidth < max) max = constraints.maxWidth;
+          return InkWell(
+            child: Container(
+              width: max,
+              height: max,
+              decoration: BoxDecoration(
+                color: color,
+                border: Border.all(),
+                borderRadius: BorderRadius.all(Radius.circular(max)),
+              ),
+              child: Center(
+                child: Text(denom),
+              ),
+            ),
+            onTap: () {
+              _con.insertCoin(value);
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildLED(BuildContext context, String title, int value) {
+    return Flexible(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          var width = constraints.maxWidth * 0.8;
+          var height = constraints.maxHeight * 0.5;
+          return Center(
+            child: Flex(
+              direction: Axis.vertical,
+              children: [
+                FittedBox(
+                  child: Text(title),
+                ),
+                Container(
+                  height: height,
+                  width: width,
+                  color: Colors.green[300],
+                  child: FittedBox(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      value.toString(),
+                      style: TextStyle(
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildProduct(int slot, int price) {
+    return Flexible(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          var height = constraints.maxHeight * 0.9;
+          var width = constraints.maxWidth * 0.9;
+          log('errechnet: $width * $height');
+          return Center(
+            child: Container(
+              height: height,
+              width: width,
+              color: Colors.grey[300],
+              child: FittedBox(
+                child: Text(
+                  slot.toString(),
+                  style: TextStyle(
+                    color: _con.selectedSlot == slot ? Colors.red : Colors.black,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
   Widget _buildProducts(BuildContext context) {
-    return Container(
-      color: Colors.green,
+    return Flex(
+      direction: Axis.vertical,
+      children: [
+        Flexible(
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              _buildProduct(1, 70),
+              _buildProduct(2, 90),
+              _buildProduct(3, 110),
+            ],
+          ),
+        ),
+        Flexible(
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              _buildProduct(4, 50),
+              _buildProduct(5, 30),
+              _buildProduct(6, 150),
+            ],
+          ),
+        ),
+        Flexible(
+          child: Flex(
+            direction: Axis.horizontal,
+            children: [
+              _buildProduct(7, 200),
+              _buildProduct(8, 160),
+              _buildProduct(9, 90),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
