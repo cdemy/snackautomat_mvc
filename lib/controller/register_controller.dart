@@ -114,7 +114,7 @@ class RegisterController implements IRegisterController {
       return;
     }
     // Just reduce debit. User can abort process if he wants his money back.
-    var newDebit = displayDebit - displayPrice;
+    final newDebit = displayDebit - displayPrice;
     _register = _register.copyWith(
       debit: newDebit,
       price: 0,

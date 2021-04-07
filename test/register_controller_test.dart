@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:snackautomat/controller/_register_controller.dart';
 
@@ -14,8 +16,8 @@ void main() {
     expect(rc.displayDebit, 0);
     expect(rc.displayPrice, 0);
     expect(rc.isAdminMode, false);
-    expect(rc.producedSlot, null);
-    expect(rc.selectedSlot, null);
+    expect(rc.producedSlot, 0);
+    expect(rc.selectedSlot, 0);
     expect(eq(rc.coins, []), true);
     expect(eq(rc.payout, []), true);
     expect(rc.message, 'Hallo Welt');
@@ -50,8 +52,8 @@ void main() {
     expect(rc.displayDebit, 0);
     expect(rc.displayPrice, 0);
     expect(rc.isAdminMode, false);
-    expect(rc.producedSlot, null);
-    expect(rc.selectedSlot, null);
+    expect(rc.producedSlot, 0);
+    expect(rc.selectedSlot, 0);
     expect(eq(rc.coins, [100, 100, 10, 10, 10, 5, 5, 5, 5]), true);
     expect(eq(rc.payout, []), true);
     expect(rc.message, 'Hallo Welt');
@@ -66,8 +68,8 @@ void main() {
     expect(rc.displayDebit, 0);
     expect(rc.displayPrice, 0);
     expect(rc.isAdminMode, false);
-    expect(rc.producedSlot, null);
-    expect(rc.selectedSlot, null);
+    expect(rc.producedSlot, 0);
+    expect(rc.selectedSlot, 0);
     expect(eq(rc.coins, [10]), true);
     expect(eq(rc.payout, []), true);
     expect(rc.message, 'Hallo Welt');
@@ -87,8 +89,8 @@ void main() {
     expect(rc.displayDebit, 250);
     expect(rc.displayPrice, 0);
     expect(rc.isAdminMode, false);
-    expect(rc.producedSlot, null);
-    expect(rc.selectedSlot, null);
+    expect(rc.producedSlot, 0);
+    expect(rc.selectedSlot, 0);
     expect(eq(rc.coins, [100, 100, 10, 10, 10, 5, 5, 5, 5]), true);
     expect(eq(rc.payout, []), true);
     expect(rc.message, 'Hallo Welt');
@@ -109,7 +111,7 @@ void main() {
     expect(rc.displayDebit, 250);
     expect(rc.displayPrice, 300);
     expect(rc.isAdminMode, false);
-    expect(rc.producedSlot, null);
+    expect(rc.producedSlot, 0);
     expect(rc.selectedSlot, 1);
     expect(eq(rc.coins, [100, 100, 10, 10, 10, 5, 5, 5, 5]), true);
     expect(eq(rc.payout, []), true);
@@ -137,8 +139,8 @@ void main() {
     expect(rc.displayDebit, 0);
     expect(rc.displayPrice, 0);
     expect(rc.isAdminMode, false);
-    expect(rc.producedSlot, null);
-    expect(rc.selectedSlot, null);
+    expect(rc.producedSlot, 0);
+    expect(rc.selectedSlot, 0);
     expect(eq(rc.coins, [100, 20, 10, 10, 10, 5, 5, 5, 5]), true);
     expect(eq(rc.payout, [100, 100, 50]), true);
     expect(rc.message, 'Hallo Welt');
@@ -157,13 +159,14 @@ void main() {
     rc.insertCoin(100);
     rc.insertCoin(100);
     rc.selectProduct(1, 150);
-    expect(rc.displayDebit, 0);
+    expect(rc.displayDebit, 50);
     expect(rc.displayPrice, 0);
     expect(rc.isAdminMode, false);
     expect(rc.producedSlot, 1);
-    expect(rc.selectedSlot, null);
-    expect(eq(rc.coins, [100, 100, 100, 100, 50, 20, 20]), true);
-    expect(eq(rc.payout, [50]), true);
+    expect(rc.selectedSlot, 0);
+    //expect(eq(rc.coins, [100, 100, 100, 100, 50, 20, 20]), true);
+    expect(rc.coinSum, 540);
+    expect(rc.payoutSum, 0);
     expect(rc.message, 'Hallo Welt');
   });
 
@@ -173,22 +176,25 @@ void main() {
     rc.insertCoin(100);
     rc.insertCoin(100);
     rc.insertCoin(20);
-    rc.insertCoin(50);
     rc.insertCoin(20);
     rc.insertCoin(20);
     rc.adminMode();
     rc.insertCoin(100);
+    log('Vor Wahl selected ${rc.selectedSlot}');
+    log('Vor Wahl produced ${rc.producedSlot}');
     rc.selectProduct(1, 150);
+    log('Nach Wahl selected ${rc.selectedSlot}');
+    log('Nach Wahl produced ${rc.producedSlot}');
     rc.insertCoin(100);
-    expect(rc.displayDebit, 0);
+    log('Nach Bezahung selected ${rc.selectedSlot}');
+    log('Nach Bezahung produced ${rc.producedSlot}');
+    expect(rc.displayDebit, 50);
     expect(rc.displayPrice, 0);
     expect(rc.isAdminMode, false);
     expect(rc.producedSlot, 1);
-    expect(rc.selectedSlot, null);
-    print('${rc.coins}');
-    print('${rc.payout}');
-    expect(eq(rc.coins, [100, 100, 100, 100, 20, 20, 20]), true);
-    expect(eq(rc.payout, [50]), true);
+    expect(rc.selectedSlot, 0);
+    expect(rc.coinSum, 460);
+    expect(rc.payoutSum, 0);
     expect(rc.message, 'Hallo Welt');
   });
 
@@ -204,7 +210,7 @@ void main() {
     expect(rc.displayDebit, 200);
     expect(rc.displayPrice, 150);
     expect(rc.isAdminMode, false);
-    expect(rc.producedSlot, null);
+    expect(rc.producedSlot, 0);
     expect(rc.selectedSlot, 1);
     print('${rc.coins}');
     print('${rc.payout}');
