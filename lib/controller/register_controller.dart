@@ -32,6 +32,10 @@ class RegisterController implements IRegisterController {
   List<int> get payout => _register.payout;
   @override
   String get message => _message;
+  @override
+  int get coinSum => coins.fold(0, (p, c) => p + c);
+  @override
+  int get payoutSum => payout.fold(0, (p, c) => p + c);
 
   @override
   void adminMode([bool? isAdminMode]) {
