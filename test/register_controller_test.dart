@@ -141,8 +141,12 @@ void main() {
     expect(rc.isAdminMode, false);
     expect(rc.producedSlot, 0);
     expect(rc.selectedSlot, 0);
-    expect(eq(rc.coins, [100, 20, 10, 10, 10, 5, 5, 5, 5]), true);
-    expect(eq(rc.payout, [100, 100, 50]), true);
+    // Da wir nicht wissen, nach welcher Methode Münzen ausgeworfen werden,
+    // vergleichen wir hier nur Summen
+    //expect(eq(rc.coins, [100, 20, 10, 10, 10, 5, 5, 5, 5]), true);
+    expect(rc.coinSum, 170);
+    //expect(eq(rc.payout, [100, 100, 50]), true);
+    expect(rc.payoutSum, 250);
     expect(rc.message, 'Hallo Welt');
   });
 
@@ -213,8 +217,6 @@ void main() {
     expect(rc.isAdminMode, false);
     expect(rc.producedSlot, 0);
     expect(rc.selectedSlot, 1);
-    print('${rc.coins}');
-    print('${rc.payout}');
     expect(eq(rc.coins, [100, 100, 100, 100]), true);
     expect(eq(rc.payout, []), true);
     expect(rc.message, 'Bitte passend(er) bezahlen');
