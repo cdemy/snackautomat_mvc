@@ -1,28 +1,28 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:snackautomat/controller/register_controller.dart';
+import 'package:snackautomat/controller/_register_controller.dart';
 
 import 'test_basis.dart';
 
 void main() {
   test('RC kann erstellt werden', () {
-    var rc = RegisterController();
+    final rc = IRegisterController();
     expect(rc == null, false);
   });
 
   test('RC hat Standardwerte nach Erstellung', () {
-    var rc = RegisterController();
+    final rc = IRegisterController();
     expect(rc.displayDebit, 0);
     expect(rc.displayPrice, 0);
     expect(rc.isAdminMode, false);
     expect(rc.producedSlot, null);
     expect(rc.selectedSlot, null);
-    expect(eq(rc.coins, []), true);
-    expect(eq(rc.payout, []), true);
-    expect(rc.message, RegisterController.stdMessage);
+    expect(rc.coinSum, 0);
+    expect(rc.payoutSum, 0);
+    expect(rc.message, 'Hallo Welt');
   });
 
   test('RC schaltet adminMode per direkter Wahl und per Toggle', () {
-    var rc = RegisterController();
+    final rc = IRegisterController();
     rc.adminMode(true);
     expect(rc.isAdminMode, true);
     rc.adminMode(false);
@@ -31,11 +31,11 @@ void main() {
     expect(rc.isAdminMode, true);
     rc.adminMode();
     expect(rc.isAdminMode, false);
-    expect(rc.message, RegisterController.stdMessage);
+    expect(rc.message, 'Hallo Welt');
   });
 
   test('RC nimm im Admin-Mode Münzen an und erreicht Zielzustand', () {
-    var rc = RegisterController();
+    final rc = IRegisterController();
     rc.adminMode();
     rc.insertCoin(10);
     rc.insertCoin(10);
@@ -54,11 +54,11 @@ void main() {
     expect(rc.selectedSlot, null);
     expect(eq(rc.coins, [100, 100, 10, 10, 10, 5, 5, 5, 5]), true);
     expect(eq(rc.payout, []), true);
-    expect(rc.message, RegisterController.stdMessage);
+    expect(rc.message, 'Hallo Welt');
   });
 
   test('RC nimm im Admin-Mode Münzen an, aber lässt keine Produktwahl zu', () {
-    var rc = RegisterController();
+    final rc = IRegisterController();
     rc.adminMode();
     rc.insertCoin(10);
     rc.selectProduct(1, 30);
@@ -70,11 +70,11 @@ void main() {
     expect(rc.selectedSlot, null);
     expect(eq(rc.coins, [10]), true);
     expect(eq(rc.payout, []), true);
-    expect(rc.message, RegisterController.stdMessage);
+    expect(rc.message, 'Hallo Welt');
   });
 
   test('RC (ohne Admin) nimmt Bezahlung an', () {
-    var rc = RegisterController();
+    final rc = IRegisterController();
     rc.insertCoin(10);
     rc.insertCoin(10);
     rc.insertCoin(10);
@@ -91,11 +91,11 @@ void main() {
     expect(rc.selectedSlot, null);
     expect(eq(rc.coins, [100, 100, 10, 10, 10, 5, 5, 5, 5]), true);
     expect(eq(rc.payout, []), true);
-    expect(rc.message, RegisterController.stdMessage);
+    expect(rc.message, 'Hallo Welt');
   });
 
   test('RC mit nicht ausreichender Bezahlung löst nix aus', () {
-    var rc = RegisterController();
+    final rc = IRegisterController();
     rc.insertCoin(10);
     rc.insertCoin(10);
     rc.insertCoin(10);
@@ -113,11 +113,11 @@ void main() {
     expect(rc.selectedSlot, 1);
     expect(eq(rc.coins, [100, 100, 10, 10, 10, 5, 5, 5, 5]), true);
     expect(eq(rc.payout, []), true);
-    expect(rc.message, RegisterController.stdMessage);
+    expect(rc.message, 'Hallo Welt');
   });
 
   test('RC, nicht ausreichende Bezahlung, Auszahlung', () {
-    var rc = RegisterController();
+    final rc = IRegisterController();
     rc.adminMode();
     rc.insertCoin(50);
     rc.insertCoin(20);
@@ -139,13 +139,17 @@ void main() {
     expect(rc.isAdminMode, false);
     expect(rc.producedSlot, null);
     expect(rc.selectedSlot, null);
-    expect(eq(rc.coins, [100, 20, 10, 10, 10, 5, 5, 5, 5]), true);
-    expect(eq(rc.payout, [100, 100, 50]), true);
-    expect(rc.message, RegisterController.stdMessage);
+    // Da wir nicht wissen, nach welcher Methode Münzen ausgeworfen werden,
+    // vergleichen wir hier nur Summen
+    //expect(eq(rc.coins, [100, 20, 10, 10, 10, 5, 5, 5, 5]), true);
+    expect(rc.coinSum, 170);
+    //expect(eq(rc.payout, [100, 100, 50]), true);
+    expect(rc.payoutSum, 250);
+    expect(rc.message, 'Hallo Welt');
   });
 
   test('RC, ausreichende Bezahlung, nachherige Wahl', () {
-    var rc = RegisterController();
+    final rc = IRegisterController();
     rc.adminMode();
     rc.insertCoin(100);
     rc.insertCoin(100);
@@ -162,13 +166,15 @@ void main() {
     expect(rc.isAdminMode, false);
     expect(rc.producedSlot, 1);
     expect(rc.selectedSlot, null);
-    expect(eq(rc.coins, [100, 100, 100, 100, 50, 20, 20]), true);
-    expect(eq(rc.payout, [50]), true);
-    expect(rc.message, RegisterController.stdMessage);
+    //expect(eq(rc.coins, [100, 100, 100, 100, 50, 20, 20]), true);
+    expect(rc.coinSum, 490);
+    //expect(eq(rc.payout, [50]), true);
+    expect(rc.coinSum, 50);
+    expect(rc.message, 'Hallo Welt');
   });
 
   test('RC, ausreichende Bezahlung, vorherige Wahl', () {
-    var rc = RegisterController();
+    final rc = IRegisterController();
     rc.adminMode();
     rc.insertCoin(100);
     rc.insertCoin(100);
@@ -187,13 +193,14 @@ void main() {
     expect(rc.selectedSlot, null);
     print('${rc.coins}');
     print('${rc.payout}');
-    expect(eq(rc.coins, [100, 100, 100, 100, 20, 20, 20]), true);
-    expect(eq(rc.payout, [50]), true);
-    expect(rc.message, RegisterController.stdMessage);
+    //expect(eq(rc.coins, [100, 100, 100, 100, 20, 20, 20]), true);
+    //expect(eq(rc.payout, [50]), true);
+    expect(rc.coinSum, 460);
+    expect(rc.payoutSum, 50);
   });
 
   test('RC, ausreichende Bezahlung, aber Wechselgeld nicht möglich', () {
-    var rc = RegisterController();
+    final rc = IRegisterController();
     rc.adminMode();
     rc.insertCoin(100);
     rc.insertCoin(100);
@@ -206,10 +213,8 @@ void main() {
     expect(rc.isAdminMode, false);
     expect(rc.producedSlot, null);
     expect(rc.selectedSlot, 1);
-    print('${rc.coins}');
-    print('${rc.payout}');
     expect(eq(rc.coins, [100, 100, 100, 100]), true);
     expect(eq(rc.payout, []), true);
-    expect(rc.message, RegisterController.stdPayExactly);
+    expect(rc.message, 'Bitte passend(er) bezahlen');
   });
 }

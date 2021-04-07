@@ -1,3 +1,5 @@
+import 'package:snackautomat/controller/register_controller.dart';
+
 /// This is what we would call an interface, even though Dart does not know
 /// the word "interface" in its language. But it knows the keyword "implements",
 /// which is what you would do with an interface in C# or Java.
@@ -57,4 +59,14 @@ abstract class IRegisterController {
   /// All the coins that are thrown out as change or because the user aborted the
   /// process.
   List<int> get payout;
+
+  /// The sum of the denominations of all coins in the coin repository
+  int get coinSum;
+
+  /// The sum of the denominations of all coins that can be grabbed by the user (Ausgabeschacht)
+  int get payoutSum;
+
+  /// When somebody tries to instantiate IRegisterController, RegisterController
+  /// will be used instead - a redirected constructor.
+  factory IRegisterController() = RegisterController;
 }
