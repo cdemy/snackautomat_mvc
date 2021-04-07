@@ -47,11 +47,11 @@ abstract class IRegisterController {
 
   /// If this is not null, it means we just bought an item and this is now where
   /// the user can get it (Ausgabeschacht).
-  int? get producedSlot;
+  int get producedSlot;
 
   /// The slot the user aims for, until the price is payed. Resets to null if
   /// the user aborts the process or actually buys the product.
-  int? get selectedSlot;
+  int get selectedSlot;
 
   /// All the coins in the machine, it should always be a sorted list of denominations.
   List<int> get coins;
