@@ -1,8 +1,12 @@
 import 'package:snackautomat/controller/_register_controller.dart';
 import 'package:snackautomat/models/_register.dart';
 
+/// Controller between GUI and Register
 class RegisterController implements IRegisterController {
+  /// Message that is displayed most of the time
   static const stdMessage = 'Hallo Welt';
+
+  /// Message that is displayed if the machine cant give out change
   static const stdPayExactly = 'Bitte passend(er) bezahlen';
   IRegister _register = IRegister();
   bool _adminMode = false;
@@ -12,15 +16,24 @@ class RegisterController implements IRegisterController {
   int? _producedSlot;
   String _message = stdMessage;
 
+  @override
   int get displayDebit => _displayDebit;
-  int? get selectedSlot => _selectedSlot;
+  @override
   int get displayPrice => _displayPrice;
+  @override
   bool get isAdminMode => _adminMode;
+  @override
   int? get producedSlot => _producedSlot;
+  @override
+  int? get selectedSlot => _selectedSlot;
+  @override
   List<int> get coins => _register.coins;
+  @override
   List<int> get payout => _register.payout;
+  @override
   String get message => _message;
 
+  @override
   void adminMode([bool? isAdminMode]) {
     _message = stdMessage;
     if (_displayDebit > 0) {
@@ -29,6 +42,7 @@ class RegisterController implements IRegisterController {
     _adminMode = isAdminMode ?? !_adminMode;
   }
 
+  @override
   void insertCoin(int denom) {
     _message = stdMessage;
     final newCoins = [..._register.coins];
@@ -60,6 +74,7 @@ class RegisterController implements IRegisterController {
     return true;
   }
 
+  @override
   void reset() {
     _message = stdMessage;
     // Hand out debit
@@ -83,6 +98,7 @@ class RegisterController implements IRegisterController {
     _displayPrice = 0;
   }
 
+  @override
   void selectProduct(int slot, int price) {
     _message = stdMessage;
     if (_adminMode) return;
@@ -92,6 +108,7 @@ class RegisterController implements IRegisterController {
     if (_displayDebit >= _displayPrice) _transaction();
   }
 
+  @override
   void takeCoin(int denom) {
     _message = stdMessage;
     if (!_adminMode) return;
@@ -132,8 +149,13 @@ class RegisterController implements IRegisterController {
   }
 }
 
+/// Exception that is thrown when we have no coins to satisfy the
+/// wish of the user. Should never happen, we have other routines that check
+/// before we initiate the process.
 class DebitLeftButNoCoinsLeft implements Exception {}
 
+/// Should never happen: A coin was removed in admin mode that never was registered.
 class AdminTookCoinThatWasntThere implements Exception {}
 
+/// When you have money in the machine, you cannot switch to admin mode.
 class CantSwitchToAdminModeWithDebit implements Exception {}
