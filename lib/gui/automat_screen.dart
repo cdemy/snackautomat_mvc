@@ -24,7 +24,7 @@ class AutomatScreen extends StatelessWidget {
                 direction: Axis.vertical,
                 children: [
                   Flexible(flex: 3, child: _buildProducts(context)),
-                  Flexible(flex: 1, child: _buildAusgabe(context)),
+                  Expanded(child: _buildAusgabe(context)),
                 ],
               ),
             ),
@@ -60,7 +60,6 @@ class AutomatScreen extends StatelessWidget {
         child: Switch(
           value: _con.isAdminMode,
           onChanged: (value) {
-            log('AdminMode wurde gestellt auf: $value');
             _con.adminMode(value);
           },
         ),
@@ -69,15 +68,27 @@ class AutomatScreen extends StatelessWidget {
   }
 
   Widget _buildAusgabe(BuildContext context) {
-    return Expanded(
-      child: Container(
-        color: Colors.red,
-        child: FittedBox(
-          child: Text(
-            _con.selectedSlot.toString(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        var width = constraints.maxWidth * 0.9;
+        var height = constraints.maxHeight * 0.9;
+        return InkWell(
+          onTap: () {
+            _con.statusReport();
+          },
+          child: Ink(
+            width: width,
+            height: height,
+            color: Colors.red,
+            child: FittedBox(
+              fit: BoxFit.fitHeight,
+              child: Text(
+                _con.selectedSlot > 0 ? _con.selectedSlot.toString() : '',
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -148,20 +159,29 @@ class AutomatScreen extends StatelessWidget {
     return Flexible(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          var height = constraints.maxHeight * 0.9;
-          var width = constraints.maxWidth * 0.9;
+          final height = constraints.maxHeight * 0.9;
+          final width = constraints.maxWidth * 0.9;
           log('errechnet: $width * $height');
           return Center(
-            child: Container(
-              height: height,
-              width: width,
-              color: Colors.grey[300],
-              child: FittedBox(
-                child: Text(
-                  slot.toString(),
-                  style: TextStyle(
-                    color: _con.selectedSlot == slot ? Colors.red : Colors.black,
-                  ),
+            child: InkWell(
+              splashColor: Colors.yellow,
+              onTap: () {
+                _con.selectProduct(slot, price);
+              },
+              child: Ink(
+                height: height,
+                width: width,
+                color: _con.selectedSlot == slot ? Colors.yellow : Colors.grey[300],
+                child: Flex(
+                  direction: Axis.vertical,
+                  children: [
+                    Expanded(
+                      child: FittedBox(
+                        child: Text(slot.toString()),
+                      ),
+                    ),
+                    Text(price.toString()),
+                  ],
                 ),
               ),
             ),

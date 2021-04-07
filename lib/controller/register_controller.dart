@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:snackautomat/controller/_register_controller.dart';
 import 'package:snackautomat/models/_register.dart';
 
@@ -9,65 +11,61 @@ class RegisterController implements IRegisterController {
   /// Message that is displayed if the machine cant give out change
   static const stdPayExactly = 'Bitte passend(er) bezahlen';
   IRegister _register = IRegister();
-  bool _adminMode = false;
-  int _displayPrice = 0;
-  int? _selectedSlot;
-  int _displayDebit = 0;
-  int? _producedSlot;
-  String _message = stdMessage;
 
   @override
-  int get displayDebit => _displayDebit;
+  int get displayDebit => _register.debit;
   @override
-  int get displayPrice => _displayPrice;
+  int get displayPrice => _register.price;
   @override
-  bool get isAdminMode => _adminMode;
+  bool get isAdminMode => _register.adminMode;
   @override
-  int? get producedSlot => _producedSlot;
+  int get producedSlot => _register.producedSlot;
   @override
-  int? get selectedSlot => _selectedSlot;
+  int get selectedSlot => _register.selectedSlot;
   @override
   List<int> get coins => _register.coins;
   @override
   List<int> get payout => _register.payout;
   @override
-  String get message => _message;
+  String get message => _register.message;
   @override
   int get coinSum => coins.fold(0, (p, c) => p + c);
   @override
   int get payoutSum => payout.fold(0, (p, c) => p + c);
 
   @override
-  void adminMode([bool? isAdminMode]) {
-    _message = stdMessage;
-    if (_displayDebit > 0) {
+  void adminMode([bool? value]) {
+    log('RegisterController: Execute: adminMode($value)');
+    if (displayDebit > 0) {
       throw CantSwitchToAdminModeWithDebit();
     }
-    _adminMode = isAdminMode ?? !_adminMode;
+    final newAdminMode = value ?? !isAdminMode;
+    _register = _register.copyWith(adminMode: newAdminMode);
   }
 
   @override
   void insertCoin(int denom) {
-    _message = stdMessage;
+    log('RegisterController: Execute: insertCoin($denom)');
     final newCoins = [..._register.coins];
     newCoins.add(denom);
     newCoins.sort((a, b) => b.compareTo(a));
-    if (!_adminMode) {
-      _displayDebit += denom;
+    var newDebit = displayDebit;
+    if (!isAdminMode) {
+      newDebit += denom;
     }
     // Update register
-    _register = _register.copyWith(coins: newCoins);
-    _producedSlot = null;
-    if (_selectedSlot != null && _displayDebit >= _displayPrice) _transaction();
+    _register = _register.copyWith(coins: newCoins, debit: newDebit);
+    if (selectedSlot > 0 && displayDebit >= displayPrice) _transaction();
   }
 
   bool _isTransactionPossible() {
-    if (_selectedSlot == null) return false;
-    if (_displayDebit < _displayPrice) return false;
-    if (_displayPrice <= 0) return false;
-    var rest = _displayDebit - _displayPrice;
+    log('RegisterController: Execute: _isTransactionPossible()');
+    if (selectedSlot == 0) return false;
+    if (displayDebit < displayPrice) return false;
+    if (displayPrice <= 0) return false;
+    var rest = displayDebit - displayPrice;
     final newCoins = [..._register.coins]..sort((a, b) => b.compareTo(a));
-    for (var i = 0; i < newCoins.length && _displayDebit > 0; i++) {
+    for (var i = 0; i < newCoins.length && rest > 0; i++) {
       if (rest >= newCoins[i]) {
         rest -= newCoins[i];
         newCoins.remove(newCoins[i]);
@@ -80,42 +78,45 @@ class RegisterController implements IRegisterController {
 
   @override
   void reset() {
-    _message = stdMessage;
+    log('RegisterController: Execute: reset()');
     // Hand out debit
     final newCoins = [..._register.coins]..sort((a, b) => b.compareTo(a));
     final newPayout = <int>[];
-    for (var i = 0; i < newCoins.length && _displayDebit > 0; i++) {
-      if (_displayDebit >= newCoins[i]) {
-        _displayDebit -= newCoins[i];
+    var newDebit = displayDebit;
+    for (var i = 0; i < newCoins.length && newDebit > 0; i++) {
+      if (newDebit >= newCoins[i]) {
+        newDebit -= newCoins[i];
         newPayout.add(newCoins[i]);
         newCoins.remove(newCoins[i]);
         i--;
       }
     }
-    if (_displayDebit > 0) throw DebitLeftButNoCoinsLeft();
+    if (newDebit > 0) throw DebitLeftButNoCoinsLeft();
     // Update Register
-    _register = _register.copyWith(coins: newCoins, payout: newPayout);
-    // Reset everything else
-    _adminMode = false;
-    _selectedSlot = null;
-    _producedSlot = null;
-    _displayPrice = 0;
+    _register = _register.copyWith(coins: newCoins, payout: newPayout, debit: newDebit, selectedSlot: 0, producedSlot: 0, price: 0);
   }
 
   @override
   void selectProduct(int slot, int price) {
-    _message = stdMessage;
-    if (_adminMode) return;
-    _displayPrice = price;
-    _selectedSlot = slot;
-    _producedSlot = null;
-    if (_displayDebit >= _displayPrice) _transaction();
+    log('RegisterController: Execute: selectProduct($slot, $price)');
+    if (isAdminMode) return;
+    _register = _register.copyWith(price: price, selectedSlot: slot);
+    if (displayDebit >= displayPrice) _transaction();
+  }
+
+  void statusReport() {
+    log('------------------------------');
+    log('* Register Controller Status');
+    log('* inserted / price: $displayDebit -> $displayPrice');
+    log('* coins: $coinSum -> $coins');
+    log('* coins: $coinSum -> $coins');
+    log('* payout: $payoutSum -> $payout');
   }
 
   @override
   void takeCoin(int denom) {
-    _message = stdMessage;
-    if (!_adminMode) return;
+    log('RegisterController: Execute: takeCoin($denom)');
+    if (isAdminMode) return;
     final newCoins = [..._register.coins]..sort((a, b) => b.compareTo(a));
     if (!newCoins.remove(denom)) {
       //throw AdminTookCoinThatWasntThere();
@@ -125,31 +126,19 @@ class RegisterController implements IRegisterController {
   }
 
   void _transaction() {
-    _message = stdMessage;
+    log('RegisterController: Execute: _transaction');
     if (!_isTransactionPossible()) {
-      _message = stdPayExactly;
+      _register = _register.copyWith(message: stdPayExactly);
       return;
     }
-    // Hand out rest
-    _displayDebit -= _displayPrice;
-    final newCoins = [..._register.coins]..sort((a, b) => b.compareTo(a));
-    final newPayout = <int>[];
-    for (var i = 0; i < newCoins.length && _displayDebit > 0; i++) {
-      if (_displayDebit >= newCoins[i]) {
-        _displayDebit -= newCoins[i];
-        newPayout.add(newCoins[i]);
-        newCoins.remove(newCoins[i]);
-        i--;
-      }
-    }
-    if (_displayDebit > 0) throw DebitLeftButNoCoinsLeft();
-    // Update Register
-    _register = _register.copyWith(coins: newCoins, payout: newPayout);
-    // Reset everything else
-    _adminMode = false;
-    _producedSlot = _selectedSlot;
-    _selectedSlot = null;
-    _displayPrice = 0;
+    // Just reduce debit. User can abort process if he wants his money back.
+    final newDebit = displayDebit - displayPrice;
+    _register = _register.copyWith(
+      debit: newDebit,
+      price: 0,
+      producedSlot: selectedSlot,
+      selectedSlot: 0,
+    );
   }
 }
 
