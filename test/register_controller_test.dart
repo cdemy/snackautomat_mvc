@@ -175,6 +175,7 @@ void main() {
     rc.adminMode();
     rc.insertCoin(100);
     rc.insertCoin(100);
+    rc.insertCoin(50);
     rc.insertCoin(20);
     rc.insertCoin(20);
     rc.insertCoin(20);
@@ -193,7 +194,7 @@ void main() {
     expect(rc.isAdminMode, false);
     expect(rc.producedSlot, 1);
     expect(rc.selectedSlot, 0);
-    expect(rc.coinSum, 460);
+    expect(rc.coinSum, 510);
     expect(rc.payoutSum, 0);
     expect(rc.message, 'Hallo Welt');
   });
