@@ -67,6 +67,6 @@ class Register implements IRegister {
           debit: debit ?? _debit,
           message: message ?? _message,
           price: price ?? _price,
-          producedSlot: producedSlot ?? _producedSlot,
+          producedSlot: producedSlot ?? 0,
           selectedSlot: selectedSlot ?? _selectedSlot);
 }

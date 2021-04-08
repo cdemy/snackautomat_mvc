@@ -40,7 +40,7 @@ class RegisterController implements IRegisterController {
       throw CantSwitchToAdminModeWithDebit();
     }
     final newAdminMode = value ?? !isAdminMode;
-    _register = _register.copyWith(adminMode: newAdminMode);
+    _register = _register.copyWith(adminMode: newAdminMode, message: stdMessage);
   }
 
   @override
@@ -54,7 +54,7 @@ class RegisterController implements IRegisterController {
       newDebit += denom;
     }
     // Update register
-    _register = _register.copyWith(coins: newCoins, debit: newDebit);
+    _register = _register.copyWith(coins: newCoins, debit: newDebit, message: stdMessage);
     if (selectedSlot > 0 && displayDebit >= displayPrice) _transaction();
   }
 
@@ -93,14 +93,14 @@ class RegisterController implements IRegisterController {
     }
     if (newDebit > 0) throw DebitLeftButNoCoinsLeft();
     // Update Register
-    _register = _register.copyWith(coins: newCoins, payout: newPayout, debit: newDebit, selectedSlot: 0, producedSlot: 0, price: 0);
+    _register = _register.copyWith(coins: newCoins, payout: newPayout, debit: newDebit, selectedSlot: 0, producedSlot: 0, price: 0, message: stdMessage);
   }
 
   @override
   void selectProduct(int slot, int price) {
     log('RegisterController: Execute: selectProduct($slot, $price)');
     if (isAdminMode) return;
-    _register = _register.copyWith(price: price, selectedSlot: slot);
+    _register = _register.copyWith(price: price, selectedSlot: slot, message: stdMessage);
     if (displayDebit >= displayPrice) _transaction();
   }
 
@@ -125,7 +125,7 @@ class RegisterController implements IRegisterController {
       //throw AdminTookCoinThatWasntThere();
       return;
     }
-    _register = _register.copyWith(coins: newCoins, payout: [denom]);
+    _register = _register.copyWith(coins: newCoins, payout: [denom], message: stdMessage);
   }
 
   void _transaction() {

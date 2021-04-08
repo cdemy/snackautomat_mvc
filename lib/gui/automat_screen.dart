@@ -6,13 +6,19 @@ import 'package:snackautomat/controller/_register_controller.dart';
 
 // ignore_for_file: prefer_expression_function_bodies
 /// Main screen of the app
-class AutomatScreen extends StatelessWidget {
+class AutomatScreen extends StatefulWidget {
+  @override
+  _AutomatScreenState createState() => _AutomatScreenState();
+}
+
+class _AutomatScreenState extends State<AutomatScreen> {
   final IRegisterController _con = IRegisterController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Automat'),
+        title: Text(_con.message),
       ),
       body: SafeArea(
         child: Flex(
@@ -59,7 +65,9 @@ class AutomatScreen extends StatelessWidget {
         child: Switch(
           value: _con.isAdminMode,
           onChanged: (value) {
-            _con.adminMode(value);
+            setState(() {
+              _con.adminMode(value);
+            });
           },
         ),
       )),
@@ -82,7 +90,7 @@ class AutomatScreen extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.fitHeight,
               child: Text(
-                _con.selectedSlot > 0 ? _con.selectedSlot.toString() : '',
+                _con.producedSlot > 0 ? _con.producedSlot.toString() : '',
               ),
             ),
           ),
@@ -111,7 +119,9 @@ class AutomatScreen extends StatelessWidget {
               ),
             ),
             onTap: () {
-              _con.insertCoin(value);
+              setState(() {
+                _con.insertCoin(value);
+              });
             },
           );
         },
@@ -165,7 +175,9 @@ class AutomatScreen extends StatelessWidget {
             child: InkWell(
               splashColor: Colors.yellow,
               onTap: () {
-                _con.selectProduct(slot, price);
+                setState(() {
+                  _con.selectProduct(slot, price);
+                });
               },
               child: Ink(
                 height: height,
