@@ -104,13 +104,16 @@ class RegisterController implements IRegisterController {
     if (displayDebit >= displayPrice) _transaction();
   }
 
+  @override
   void statusReport() {
     log('------------------------------');
     log('* Register Controller Status');
-    log('* inserted / price: $displayDebit -> $displayPrice');
+    log('* debit / price: $displayDebit -> $displayPrice');
     log('* coins: $coinSum -> $coins');
     log('* coins: $coinSum -> $coins');
     log('* payout: $payoutSum -> $payout');
+    log('* product selected / produced: $selectedSlot, $producedSlot');
+    log('------------------------------');
   }
 
   @override

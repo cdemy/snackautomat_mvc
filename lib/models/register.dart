@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:snackautomat/models/_register.dart';
 
 /// Concrete implementation of IRegister
@@ -63,12 +61,12 @@ class Register implements IRegister {
     int? selectedSlot,
   }) =>
       Register(
-        coins: coins ?? _coins,
-        payout: payout ?? [],
-        adminMode: adminMode ?? _adminMode,
-        debit: debit ?? _debit,
-        message: message ?? _message,
-        price: price ?? _price,
-        producedSlot: producedSlot ?? _producedSlot,
-      );
+          coins: coins ?? _coins,
+          payout: payout ?? [],
+          adminMode: adminMode ?? _adminMode,
+          debit: debit ?? _debit,
+          message: message ?? _message,
+          price: price ?? _price,
+          producedSlot: producedSlot ?? _producedSlot,
+          selectedSlot: selectedSlot ?? _selectedSlot);
 }

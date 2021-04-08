@@ -36,10 +36,10 @@ abstract class IRegisterController {
   void adminMode([bool? isAdminMode]);
 
   /// Our GUI wants to know how much money was already inserted
-  int? get displayDebit;
+  int get displayDebit;
 
   /// Our GUI wants to know what the product we are aiming for costs
-  int? get displayPrice;
+  int get displayPrice;
 
   /// We need to know if we are in admin mode or not
   bool get isAdminMode;

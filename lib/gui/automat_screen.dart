@@ -29,13 +29,12 @@ class AutomatScreen extends StatelessWidget {
               ),
             ),
             Flexible(
-              flex: 1,
               child: Flex(
                 direction: Axis.vertical,
                 children: [
                   _buildAdminButton(context),
-                  _buildLED(context, 'Preis', _con.displayPrice ?? 0),
-                  _buildLED(context, 'Einwurf', _con.displayDebit ?? 0),
+                  _buildLED(context, 'Preis', _con.displayPrice),
+                  _buildLED(context, 'Einwurf', _con.displayDebit),
                   _buildCoin(context, Colors.grey[200], 200, '2'),
                   _buildCoin(context, Colors.grey[200], 100, '1'),
                   _buildCoin(context, Colors.orange[200], 50, '50'),
@@ -70,8 +69,8 @@ class AutomatScreen extends StatelessWidget {
   Widget _buildAusgabe(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        var width = constraints.maxWidth * 0.9;
-        var height = constraints.maxHeight * 0.9;
+        final width = constraints.maxWidth * 0.9;
+        final height = constraints.maxHeight * 0.9;
         return InkWell(
           onTap: () {
             _con.statusReport();
@@ -124,8 +123,8 @@ class AutomatScreen extends StatelessWidget {
     return Flexible(
       child: LayoutBuilder(
         builder: (context, constraints) {
-          var width = constraints.maxWidth * 0.8;
-          var height = constraints.maxHeight * 0.5;
+          final width = constraints.maxWidth * 0.8;
+          final height = constraints.maxHeight * 0.5;
           return Center(
             child: Flex(
               direction: Axis.vertical,
@@ -141,7 +140,7 @@ class AutomatScreen extends StatelessWidget {
                     alignment: Alignment.centerRight,
                     child: Text(
                       value.toString(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 14,
                       ),
                     ),

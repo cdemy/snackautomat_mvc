@@ -8,7 +8,7 @@ import 'test_basis.dart';
 void main() {
   test('RC kann erstellt werden', () {
     final rc = IRegisterController();
-    expect(rc == null, false);
+    expect(rc.toString(), "Instance of 'RegisterController'");
   });
 
   test('RC hat Standardwerte nach Erstellung', () {
